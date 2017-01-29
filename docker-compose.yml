@@ -1,0 +1,33 @@
+version: '2'
+
+services:
+  db:
+    image: postgres:9.6.1
+    volumes:
+    - postgres_data:/var/lib/postgresql/data
+
+  rack:
+    build:
+      context: .
+    command: bundle exec rackup --port 8888 --host "0.0.0.0" --env development
+    env_file:
+    - ./.env
+    environment:
+    - RACK_ENV=development
+    volumes:
+    - .:/app
+    - bundle_install:/app/vendor/bundle
+    - bundle:/app/.bundle
+    ports:
+    - 8888:8888
+    depends_on:
+    - db
+
+
+volumes:
+  postgres_data:
+    driver: local
+  bundle_install:
+    driver: local
+  bundle:
+    driver: local
